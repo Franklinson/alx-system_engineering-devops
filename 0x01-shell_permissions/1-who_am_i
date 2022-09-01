@@ -1,2 +1,2 @@
-|#!/bin/bash
-script id -un
+#!/bin/bash
+Id -u -n
