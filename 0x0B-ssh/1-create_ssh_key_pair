@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# Create the private key file
-
-ssh-keygen -t rsa -b 4096 -f school -N betty

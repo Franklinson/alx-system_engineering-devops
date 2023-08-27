@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-SSH configuration file
-
-Host *
-  IdentityFile ~/.ssh/school
-  IdentitiesOnly yes
-  PasswordAuthentication no
