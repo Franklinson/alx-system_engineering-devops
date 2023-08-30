@@ -2,4 +2,4 @@
 #debugging webstack
 
 echo "Hello Holberton" >> /var/www/html/index.html
-curl localhost
+service apache2 start
