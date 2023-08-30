@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#debugging webstack
+
+echo "Hello Holberton" >> /var/www/html/index.html
+curl localhost
