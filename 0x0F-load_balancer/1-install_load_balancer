@@ -8,7 +8,7 @@ sudo apt-get install -y haproxy=2.8.\*
 sudo echo -e "frontend\n\
      bind *:80\n\
      mode http\n\
-     default_backend servers\n\n\
+     default_backend servers_hol\n\n\
 backend servers_hol\n\
         balance roundrobin\n\
         mode http\n\
