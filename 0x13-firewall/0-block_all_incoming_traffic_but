@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #setting ufw on firewall
 
-
 sudo apt install ufw
 sed -i 's/IPV6=.*/IPV6=yes/' /etc/default/ufw
 sudo ufw allow ssh
