@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 NGINX_USER_ID=1000
 NGINX_GROUP_ID=1000
 chown $NGINX_USER_ID:$NGINX_GROUP_ID /var/run/nginx /etc/nginx /var/log/nginx

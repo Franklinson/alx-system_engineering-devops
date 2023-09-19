@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 # Set the Nginx user ID and group ID
 NGINX_USER_ID=1000
