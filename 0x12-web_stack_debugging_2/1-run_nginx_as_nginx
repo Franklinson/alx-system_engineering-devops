@@ -1,24 +1,7 @@
 #!/usr/bin/env bash
-# Set the Nginx user ID and group ID
-
-NGINX_USER_ID=1000
-NGINX_GROUP_ID=1000
-
-# Change the ownership of the Nginx process directory
-chown $NGINX_USER_ID:$NGINX_GROUP_ID /var/run/nginx
-
-# Change the ownership of the Nginx configuration directory
-chown $NGINX_USER_ID:$NGINX_GROUP_ID /etc/nginx
-
-# Change the ownership of the Nginx log directory
-chown $NGINX_USER_ID:$NGINX_GROUP_ID /var/log/nginx
-
-# Change the Nginx process user and group
-sed -i "s/user .*;/user $NGINX_USER_ID;/" /etc/nginx/nginx.conf
-sed -i "s/group .*;/group $NGINX_GROUP_ID;/" /etc/nginx/nginx.conf
-
-# Update the Nginx listen directive to listen on all active IPs on port 8080
-sed -i "s/listen 80;/listen 8080 default_server;/" /etc/nginx/conf.d/default.conf
-
-# Start the Nginx service
-service nginx start
+# Creating user for nginx on port 8080
+sed -i "s/#user www-data/user nginx/" /etc/nginx/nginx.conf
+sed -i "s/80/8080/g" /etc/nginx/sites-available/default
+chmod 644 /etc/nginx/nginx.conf
+pkill apache2
+sudo -u nginx service nginx start
