@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # backing up and compressing mysql data
-mysqldump --all-databases -u root --password="$1" > backup.sql
+password="$1"
 timestamp=$(date +'%d-%m-%Y')
-tar -czvf "$timestamp"" backup.sql
+sudo sudo mysqldump -uroot -p"$password" --all-databases > backup.sql
+tar -cvzf "$timestand.tar.gz" backup.sql
