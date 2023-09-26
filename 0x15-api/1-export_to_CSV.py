@@ -1,55 +1,50 @@
 #!/usr/bin/python3
+"""Accessing a REST API for todo lists of employees"""
 
-"""Fetching data from an API and exporting to CSV"""
 import requests
-import csv
 import sys
-
-
-def get_employee_todo_progress(employee_id):
-    # Define the base URL of the REST API
-    base_url = 'https://jsonplaceholder.typicode.com/'
-
-    # Make a GET request to fetch employee information
-    employee_response = requests.get(
-        base_url + f'users/{employee_id}')
-    employee_data = employee_response.json()
-    user_id = employee_data['id']
-    username = employee_data['username']
-
-    # Make a GET request to fetch the employee's TODO list
-    todo_response = requests.get(
-        base_url + f'todos?userId={employee_id}')
-    todo_data = todo_response.json()
-
-    # Prepare the data for CSV export
-    csv_data = []
-    for task in todo_data:
-        task_completed_status = (
-            "Completed" if task['completed'] else "Not Completed"
-        )
-        task_title = task['title']
-        csv_data.append([user_id, username, task_completed_status, task_title])
-
-    # Create and write to the CSV file
-    csv_filename = f'{user_id}.csv'
-    with open(csv_filename, mode='w', newline='') as csv_file:
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(
-            ["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]
-        )
-        csv_writer.writerows(csv_data)
-
-    print(f"Data exported to {csv_filename}")
+import csv
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: python script.py EMPLOYEE_ID")
+        print("Usage: python script.py <employeeId>")
         sys.exit(1)
 
-    try:
-        employee_id = int(sys.argv[1])
-        get_employee_todo_progress(employee_id)
-    except ValueError:
-        print("Invalid employee ID. Please provide an integer.")
+    employeeId = sys.argv[1]
+    baseUrl = "https://jsonplaceholder.typicode.com/users"
+    url = baseUrl + "/" + employeeId
+
+    response = requests.get(url)
+    employeeName = response.json().get('name')
+
+    todoUrl = url + "/todos"
+    response = requests.get(todoUrl)
+    tasks = response.json()
+    done_tasks = []
+
+    for task in tasks:
+        user_id = employeeId
+        username = employeeName
+        task_completed_status = task.get('completed')
+        task_title = task.get('title')
+        done_tasks.append((
+            user_id,
+            username,
+            task_completed_status,
+            task_title
+        ))
+
+    csv_filename = "{}.csv".format(employeeId)
+    with open(csv_filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([
+            "USER_ID",
+            "USERNAME",
+            "TASK_COMPLETED_STATUS",
+            "TASK_TITLE"
+        ])
+
+        writer.writerows(done_tasks)
+
+    print("Data exported to {}.".format(csv_filename))
