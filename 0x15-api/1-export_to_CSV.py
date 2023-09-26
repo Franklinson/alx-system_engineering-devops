@@ -3,48 +3,24 @@
 
 import requests
 import sys
-import csv
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <employeeId>")
-        sys.exit(1)
-
     employeeId = sys.argv[1]
     baseUrl = "https://jsonplaceholder.typicode.com/users"
     url = baseUrl + "/" + employeeId
 
     response = requests.get(url)
-    employeeName = response.json().get('name')
+    username = response.json().get('username')
 
     todoUrl = url + "/todos"
     response = requests.get(todoUrl)
     tasks = response.json()
-    done_tasks = []
 
+with open(f'{employeeId}.csv', 'w') as file:
     for task in tasks:
-        user_id = employeeId
-        username = employeeName
-        task_completed_status = task.get('completed')
-        task_title = task.get('title')
-        done_tasks.append((
-            user_id,
-            username,
-            task_completed_status,
-            task_title
-        ))
-
-    csv_filename = "{}.csv".format(employeeId)
-    with open(csv_filename, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow([
-            "USER_ID",
-            "USERNAME",
-            "TASK_COMPLETED_STATUS",
-            "TASK_TITLE"
-        ])
-
-        writer.writerows(done_tasks)
-
-    print("Data exported to {}.".format(csv_filename))
+        employeeId = employeeId
+        username = username
+        completed = task.get('completed')
+        title = task.get('title')
+        file.write(f'"{employeeId}","{username}","{completed}","{title}"\n')
