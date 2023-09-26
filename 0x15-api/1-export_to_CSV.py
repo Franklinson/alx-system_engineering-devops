@@ -9,7 +9,8 @@ if __name__ == '__main__':
     employeeId = sys.argv[1]
     baseUrl = "https://jsonplaceholder.typicode.com/users"
     url = baseUrl + "/" + employeeId
-
+    
+    # Retrieve username from API
     response = requests.get(url)
     username = response.json().get('username')
 
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     response = requests.get(todoUrl)
     tasks = response.json()
 
+# Export data to csv file
 with open(f'{employeeId}.csv', 'w') as file:
     for task in tasks:
         employeeId = employeeId
