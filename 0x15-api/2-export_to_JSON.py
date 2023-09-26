@@ -1,57 +1,55 @@
 #!/usr/bin/python3
 
-"""Fetching data from an API and exporting to JSON"""
-
+"""Fetching data from an API and exporting it in JSON format"""
 import requests
 import sys
 import json
 
 
 def get_employee_todo_progress(employee_id):
-    # Define the API endpoint URL
-    api_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos'
+    # Define the base URL of the REST API
+    base_url = 'https://jsonplaceholder.typicode.com/'
 
-    try:
-        # Send a GET request to the API
-        response = requests.get(api_url)
-        response.raise_for_status()
+    # Make a GET request to fetch employee information
+    employee_response = requests.get(base_url + f'users/{employee_id}')
+    employee_data = employee_response.json()
+    employee_name = employee_data['name']
 
-        # Parse the JSON response
-        todos = response.json()
+    # Make a GET request to fetch the employee's TODO list
+    todo_response = requests.get(base_url + f'todos?userId={employee_id}')
+    todo_data = todo_response.json()
 
-        # Filter completed tasks and count them
-        completed_tasks = []
-        for task in todos:
-            if task['completed']:
-                task_data = {
-                    "task": task['title'],
-                    "completed": task['completed'],
-                    "username": todos[0]['username']
-                }
-                completed_tasks.append(task_data)
+    # Create a list to store the tasks
+    tasks = []
 
-        # Create a dictionary with the required format
-        user_data = {
-            str(employee_id): completed_tasks
+    # Extract and format task data
+    for task in todo_data:
+        task_data = {
+            "task": task['title'],
+            "completed": task['completed'],
+            "username": employee_name
         }
+        tasks.append(task_data)
 
-        # Export data to a JSON file
-        output_filename = f'{employee_id}.json'
-        with open(output_filename, 'w') as json_file:
-            json.dump(user_data, json_file, indent=4)
+    # Create a dictionary for the JSON format
+    user_data = {
+        str(employee_id): tasks
+    }
 
-        print(f"Data exported to {output_filename}")
+    # Write the data to a JSON file
+    with open(f'{employee_id}.json', 'w') as json_file:
+        json.dump(user_data, json_file, indent=4)
 
-    except requests.exceptions.HTTPError as err:
-        print(f"Error fetching data from the API: {err}")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    print(f"Data exported to {employee_id}.json")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("Usage: python script.py <employee_id>")
+        print("Usage: python script.py EMPLOYEE_ID")
         sys.exit(1)
 
-    employee_id = int(sys.argv[1])
-    get_employee_todo_progress(employee_id)
+    try:
+        employee_id = int(sys.argv[1])
+        get_employee_todo_progress(employee_id)
+    except ValueError:
+        print("Invalid employee ID. Please provide an integer.")

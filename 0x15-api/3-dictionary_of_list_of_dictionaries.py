@@ -1,69 +1,58 @@
 #!/usr/bin/python3
 
-"""Fetching data from an API and exporting it to JSON"""
-
+"""Fetching data from an API and exporting in JSON format"""
 import requests
 import sys
 import json
 
 
 def get_employee_todo_progress(employee_id):
-    # Define the API endpoint URL
-    api_url = f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos'
+    # Define the base URL of the REST API
+    base_url = 'https://jsonplaceholder.typicode.com/'
 
-    try:
-        # Send a GET request to the API
-        response = requests.get(api_url)
-        response.raise_for_status()
+    # Make a GET request to fetch employee information
+    employee_response = requests.get(base_url + f'users/{employee_id}')
+    employee_data = employee_response.json()
+    employee_name = employee_data['name']
 
-        # Parse the JSON response
-        todos = response.json()
+    # Make a GET request to fetch the employee's TODO list
+    todo_response = requests.get(base_url + f'todos?userId={employee_id}')
+    todo_data = todo_response.json()
 
-        # Get the employee's name
-        employee_name = todos[0]['userId']
+    # Calculate the number of completed tasks
+    completed_tasks = [task for task in todo_data if task['completed']]
 
-        # Create a dictionary to store the tasks for this employee
-        employee_tasks = {"username": employee_name, "tasks": []}
-
-        # Populate the tasks list for this employee
-        for task in todos:
-            employee_tasks["tasks"].append({
+    # Return a dictionary representing the user's tasks
+    return {
+        "username": employee_name,
+        "tasks": [
+            {
                 "task": task["title"],
                 "completed": task["completed"]
-            })
-
-        return employee_tasks
-
-    except requests.exceptions.HTTPError as err:
-        print(f"Error fetching data from the API: {err}")
-        return None
+            }
+            for task in completed_tasks
+        ]
+    }
 
 
-def export_to_json(data):
-    if data is not None:
-        with open("todo_all_employees.json", "a") as json_file:
-            json.dump(data, json_file)
-            json_file.write("\n")
-
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <employee_id>")
+if __name__ == '__main__':
+    if len(sys.argv) != 1:
+        print("Usage: python script.py")
         sys.exit(1)
 
-    employee_id = int(sys.argv[1])
+    # Create a dictionary to store tasks for all employees
+    all_employee_tasks = {}
 
-    # Initialize an empty list to store all employee tasks
-    all_employee_tasks = []
+    try:
+        # Fetch tasks for all users (employee IDs 1 to 10)
+        for employee_id in range(1, 11):
+            employee_tasks = get_employee_todo_progress(employee_id)
+            all_employee_tasks[employee_id] = employee_tasks
+    except ValueError:
+        print("Invalid employee ID. Please provide an integer.")
 
-    # Loop through employee IDs (assuming you have a range of IDs)
-    for employee_id in range(1, 11):  # Assuming IDs range from 1 to 10
-        employee_tasks = get_employee_todo_progress(employee_id)
-        if employee_tasks:
-            all_employee_tasks.append(employee_tasks)
-
-    # Export all employee tasks to JSON
-    for employee_data in all_employee_tasks:
-        export_to_json(employee_data)
+    # Export the data in JSON format
+    with open('todo_all_employees.json', 'w') as json_file:
+        json.dump(all_employee_tasks, json_file, indent=4)
 
     print("Data exported to todo_all_employees.json")
