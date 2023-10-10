@@ -26,7 +26,6 @@ def top_ten(subreddit):
             for i, post in enumerate(posts[:10], start=1):
                 print(f"{i}. {post['data']['title']}")
         else:
-            print(f"Failed to retrieve data for subreddit '{subreddit}': "
-                  "It does not exist or has no hot posts.")
+            print(f"None")
     else:
         print(f"None")
